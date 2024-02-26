@@ -1,0 +1,22 @@
+{% extends 'layouts/app.jinja2' %}
+{% import 'macros/detail.jinja2' as detail %}
+{% import 'macros/start.jinja2' as start %}
+{% import 'macros/topbar.jinja2' as topbar %}
+
+{% block title %}Portal de Notarías{% endblock %}
+
+{% block topbar_actions %}
+    {{ topbar.page('Portal de Notarías') }}
+{% endblock %}
+
+{% block content %}
+    {# Detalle de la ultima quincena #}
+    {% call detail.card(title='Bienvenida') %}
+        <p class="lead text-center">Hola. Este es el Portal de Notarías.</p>
+    {% endcall %}
+{% endblock %}
+
+{% block custom_javascript %}
+    <!-- Moment.js -->
+    {{ detail.moment_js(moment) }}
+{% endblock %}

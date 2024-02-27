@@ -24,6 +24,7 @@
         {{ detail.label_value('Icono', modulo.icono) }}
         {{ detail.label_value('Ruta', modulo.ruta) }}
         {{ detail.label_value_boolean('En menú de navegación', modulo.en_navegacion) }}
+        {{ detail.label_value_boolean('En Portal de Notarías', modulo.en_portal_notarias) }}
         {{ detail.label_value('Creado', moment(modulo.creado).format('llll')) }}
     {% endcall %}
     {% if current_user.can_view('PERMISOS') %}

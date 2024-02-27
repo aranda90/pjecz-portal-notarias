@@ -1,6 +1,7 @@
 """
 Modulos, vistas
 """
+
 import json
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
@@ -50,6 +51,7 @@ def datatable_json():
                 },
                 "icono": resultado.icono,
                 "en_navegacion": resultado.en_navegacion,
+                "en_portal_notarias": resultado.en_portal_notarias,
             }
         )
     # Entregar JSON
@@ -104,6 +106,7 @@ def new():
             icono=form.icono.data,
             ruta=form.ruta.data,
             en_navegacion=form.en_navegacion.data,
+            en_portal_notarias=form.en_portal_notarias.data,
         )
         modulo.save()
         bitacora = Bitacora(
@@ -140,6 +143,7 @@ def edit(modulo_id):
             modulo.icono = form.icono.data
             modulo.ruta = form.ruta.data
             modulo.en_navegacion = form.en_navegacion.data
+            modulo.en_portal_notarias = form.en_portal_notarias.data
             modulo.save()
             bitacora = Bitacora(
                 modulo=Modulo.query.filter_by(nombre=MODULO).first(),
@@ -155,6 +159,7 @@ def edit(modulo_id):
     form.icono.data = modulo.icono
     form.ruta.data = modulo.ruta
     form.en_navegacion.data = modulo.en_navegacion
+    form.en_portal_notarias.data = modulo.en_portal_notarias
     return render_template("modulos/edit.jinja2", form=form, modulo=modulo)
 
 

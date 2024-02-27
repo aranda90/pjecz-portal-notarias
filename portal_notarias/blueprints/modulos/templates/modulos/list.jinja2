@@ -29,7 +29,8 @@
                 <tr>
                     <th>Nombres</th>
                     <th>Iconos</th>
-                    <th>En menú de navegación</th>
+                    <th>En menú</th>
+                    <th>En P. Notarías</th>
                 </tr>
             </thead>
         </table>
@@ -44,7 +45,8 @@
         configDataTable['columns'] = [
             { data: 'detalle' },
             { data: 'icono' },
-            { data: 'en_navegacion' }
+            { data: 'en_navegacion' },
+            { data: 'en_portal_notarias' },
         ];
         configDataTable['columnDefs'] = [
             {
@@ -62,7 +64,7 @@
                 }
             },
             {
-                targets: 2, // en_navegacion
+                targets: [2,3], // en_navegacion, en_portal_notarias
                 data: null,
                 render: function(data, type, row, meta) {
                     if (data) {

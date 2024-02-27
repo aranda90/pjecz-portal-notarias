@@ -1,6 +1,7 @@
 """
 Modulos
 """
+
 from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.orm import relationship
 
@@ -23,6 +24,7 @@ class Modulo(database.Model, UniversalMixin):
     icono = Column(String(48), nullable=False)
     ruta = Column(String(64), nullable=False)
     en_navegacion = Column(Boolean, nullable=False, default=True)
+    en_portal_notarias = Column(Boolean, nullable=False, default=False)
 
     # Hijos
     bitacoras = relationship("Bitacora", back_populates="modulo")

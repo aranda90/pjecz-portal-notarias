@@ -3,16 +3,28 @@
 {% import 'macros/start.jinja2' as start %}
 {% import 'macros/topbar.jinja2' as topbar %}
 
-{% block title %}Portal de Notarías{% endblock %}
+{% block title %}Portal de Notarías {% endblock %}
 
 {% block topbar_actions %}
-    {{ topbar.page('Portal de Notarías') }}
+    {{ topbar.page('Portal de Notarías ' + current_user.nombre) }}
 {% endblock %}
 
 {% block content %}
     {# Detalle de la ultima quincena #}
-    {% call detail.card(title='Bienvenida') %}
-        <p class="lead text-center">Hola. Este es el Portal de Notarías.</p>
+    {% call detail.card(title='Bienvenidos ') %}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-sm-12 mb-2">
+                    <img src="https://storage.googleapis.com/pjecz-informatica/static/images/inicio_notaria.png" class="img-fluid mb-2">
+                </div>
+                <div class="col-md-6 col-sm-12 mb-2 mt-5">
+                    <p>
+                        Este espacio está diseñado para que las notarías puedan realizar de manera fácil y eficiente la publicación y republicación de sus edictos para poder gestionarlas.                     
+                    </p>
+                    <a href="{{ url_for('edictos.list_active') }}" class="btn d-grid gap-2 btn-primary btn-xl btn-tickets ml-auto">Subir Edicto</a>
+                </div>
+            </div>
+        </div>
     {% endcall %}
 {% endblock %}
 

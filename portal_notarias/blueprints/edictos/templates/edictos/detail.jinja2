@@ -1,0 +1,108 @@
+{% extends 'layouts/app.jinja2' %}
+{% import 'macros/detail.jinja2' as detail %}
+{% import 'macros/modals.jinja2' as modals %}
+{% import 'macros/topbar.jinja2' as topbar %}
+
+{% block title %}Edicto{% endblock %}
+
+{% block custom_head %}
+   <style>
+        .disabled-link {
+            color: #999; /* Cambia el color del texto para indicar deshabilitado */
+            cursor: not-allowed; /* Cambia el cursor para indicar que no es clickeable */
+            text-decoration: none; /* Elimina cualquier decoración de enlace (subrayado) */
+            pointer-events: none; /* Deshabilita eventos de puntero (evita clics) */
+        }
+   </style>
+{% endblock %}
+
+{% block topbar_actions %}
+    {% call topbar.page_buttons('Edicto ' + edicto.descripcion | string ) %}
+        {{ topbar.button_previous('Edictos', url_for('edictos.list_active')) }}
+        {% if current_user.can_insert('EDICTOS') and current_user.autoridad_id == edicto.autoridad_id %}
+            {{ topbar.button_upload('Subir', url_for('edictos.new')) }}
+        {% endif %}
+        {# {% if current_user.can_admin('EDICTOS') or (current_user.can_edit('EDICTOS') and edicto.autoridad_id == current_user.autoridad_id) %}
+            {{ topbar.button_edit('Editar', url_for('edictos.edit', edicto_id=edicto.id)) }}
+        {% endif %} #}
+    {% endcall %}
+{% endblock %}
+
+{% block content %}
+    {% call detail.card(estatus=edicto.estatus) %}
+        {{ detail.label_value_big('Descripción', edicto.descripcion) }}
+        {{ detail.label_value('Distrito', edicto.autoridad.distrito.nombre) }}
+        {{ detail.label_value('Notaria', edicto.autoridad.descripcion) }}
+        {{ detail.label_value('Publicaciones', edicto.acuse_num) }}
+        {{ detail.label_value('Creado', moment(edicto.creado).format('llll')) }}
+        <div class="row mt-2">
+            <div class="col-md-6">
+                {{ detail.button_md('Enlace público para descargar PDF', edicto.descargar_url, 'mdi:download', '_blank') }}
+            </div>
+            <div class="col-md-6">
+                {{ detail.button_md('Ver el Acuse', url_for('edictos.checkout', id_hashed=edicto.encode_id()), 'mdi:download', '_blank') }}
+            </div>
+        </div>
+    {% endcall %}
+    {# Listado de acuses #}
+    {% if current_user.can_view('EDICTOS ACUSES') %}
+        {% call detail.card('Republicación de Edictos' ) %}
+            <table id="edictos_acuses_datatable" class="table display nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Fecha de publicación</th>
+                        <th>Descripción del edicto</th>
+                        <th>Archivo</th>
+                    </tr>
+                </thead>
+            </table>
+        {% endcall %}
+    {% endif %}
+{% endblock %}
+
+{% block custom_javascript %}
+    {{ detail.config_datatable() }}
+    {% if current_user.can_view('EDICTOS ACUSES') %}
+        <script>
+            configDataTable['ajax']['url'] = '/edictos_acuses/datatable_json';
+            configDataTable['ajax']['data'] = { 'estatus': "A", 'edicto_id': {{ edicto.id}} };
+            configDataTable['columns'] = [
+                { data: 'detalle' },
+                { data: 'edicto_descripcion' },
+                { data: 'acuse_recepcion' },
+            ];
+            configDataTable['columnDefs'] = [
+                {
+                    targets: 0, // detalle
+                    data: null,
+                    render: function(data, type, row, meta) {
+                        return data.fecha;
+                    }
+                },
+                {
+                    targets: 1, // descripcion
+                    data: null,
+                    render: function(data, type, row, meta) {
+                        if(data.length > 32)
+                            return '<span title="' + data + '">' + data.substr(0, 32) + '…'  + '</span>';
+                        return data;
+                    }
+                },
+                {
+                    targets: 2, // acuse_recepcion
+                    data: null,
+                    render: function(data, type, row, meta) {
+                        if(data === "No disponible"){
+                            return '<span class="disabled-link">Acuse recepción</span>'
+                        }else{
+                            return '<a href="' + data + '" target="_blank">Acuse recepción</a>';
+                        }
+                    }
+
+                }
+            ];
+            $('#edictos_acuses_datatable').DataTable(configDataTable);
+        </script>
+    {% endif %}
+    {{ detail.moment_js(moment) }}
+{% endblock %}

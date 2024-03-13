@@ -1,6 +1,7 @@
 """
 Distritos
 """
+
 from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.orm import relationship
 
@@ -22,6 +23,7 @@ class Distrito(database.Model, UniversalMixin):
     nombre = Column(String(256), nullable=False, unique=True)
     nombre_corto = Column(String(64), nullable=False)
     es_distrito = Column(Boolean, nullable=False, default=False)
+    es_distrito_judicial = Column(Boolean, nullable=False, default=False)
     es_jurisdiccional = Column(Boolean, nullable=False, default=False)
 
     # Hijos

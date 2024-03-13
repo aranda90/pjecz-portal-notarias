@@ -14,7 +14,19 @@ body {
 .bg-dark {
   background-color: #231236 !important;
 }
+.btn-primary {
+  background-color: #6b2594 !important;
+  border-color: #6b2594 !important;
+}
 
+.btn-outline-primary {
+  border-color: #6b2594 !important;
+  color: #6b2594;
+}
+.btn-outline-primary:hover {
+  background-color: #6b2594 !important;
+  color: #fff;
+}
 /* Sidebar */
 
 .sidebar {

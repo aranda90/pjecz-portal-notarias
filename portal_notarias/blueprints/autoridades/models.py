@@ -1,6 +1,7 @@
 """
 Autoridad
 """
+
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
@@ -26,9 +27,13 @@ class Autoridad(database.Model, UniversalMixin):
     descripcion = Column(String(256), nullable=False)
     descripcion_corta = Column(String(64), nullable=False)
     es_extinto = Column(Boolean, nullable=False, default=False)
+    es_jurisdiccional = Column(Boolean, nullable=False, default=False)
+    es_notaria = Column(Boolean, nullable=False, default=False)
+    directorio_edictos = Column(String(256), nullable=False, default="", server_default="")
 
     # Hijos
     usuarios = relationship("Usuario", back_populates="autoridad")
+    edictos = relationship("Edicto", back_populates="autoridad", lazy="noload")
 
     def __repr__(self):
         """Representación"""

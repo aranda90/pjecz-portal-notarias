@@ -108,6 +108,7 @@ Tenga en cuenta que...
             bitacora.warning(mensaje, str(error))
 
 """
+
 import datetime
 import locale
 import re
@@ -123,6 +124,22 @@ from werkzeug.utils import secure_filename
 from lib.exceptions import MyFilenameError, MyNotAllowedExtensionError, MyUnknownExtensionError
 
 locale.setlocale(locale.LC_TIME, "es_MX.utf8")
+
+
+class NotAllowedExtesionError(Exception):
+    """Exception raised when the extension is not allowed"""
+
+
+class UnknownExtesionError(Exception):
+    """Exception raised when the extension is unknown"""
+
+
+class NoneFilenameError(Exception):
+    """Exception raised when the filename is None"""
+
+
+class NotConfiguredError(Exception):
+    """Exception raised when a environment variable is not configured"""
 
 
 class GoogleCloudStorage:

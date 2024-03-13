@@ -3,6 +3,7 @@ Safe String
 """
 
 import re
+from datetime import date
 
 from unidecode import unidecode
 
@@ -11,6 +12,8 @@ CONCEPTO_REGEXP = r"^[PD][a-zA-Z0-9]{2,3}$"
 CONTRASENA_REGEXP = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,48}$"
 CURP_REGEXP = r"^[a-zA-Z]{4}\d{6}[a-zA-Z]{6}[A-Z0-9]{2}$"
 EMAIL_REGEXP = r"^[\w.-]+@[\w.-]+\.\w+$"
+EXPEDIENTE_REGEXP = r"^\d+\/[12]\d\d\d(-[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?)?$"
+NUMERO_PUBLICACION_REGEXP = r"^\d+/[12]\d\d\d$"
 PLAZA_REGEXP = r"^[a-zA-Z0-9]{1,24}$"
 QUINCENA_REGEXP = r"^\d{6}$"
 RFC_REGEXP = r"^[a-zA-Z]{3,4}\d{6}[a-zA-Z0-9]{3}$"
@@ -64,6 +67,30 @@ def safe_email(input_str, search_fragment=False) -> str:
     return final
 
 
+def safe_expediente(input_str):
+    """Safe expediente convierte la cadena en un formato de expediente valido como 123/2023, 123/2023-II, 123/2023-II-2, 123/2023-F2"""
+    if not isinstance(input_str, str) or input_str.strip() == "":
+        return ""
+    elementos = re.sub(r"[^a-zA-Z0-9]+", "|", unidecode(input_str.strip())).split("|")
+    try:
+        numero = int(elementos[0])
+        ano = int(elementos[1])
+    except (IndexError, ValueError) as error:
+        raise error
+    if ano < 1900 or ano > date.today().year:
+        raise ValueError
+    extra_1 = ""
+    if len(elementos) >= 3:
+        extra_1 = "-" + elementos[2].upper()
+    extra_2 = ""
+    if len(elementos) >= 4:
+        extra_2 = "-" + elementos[3].upper()
+    limpio = f"{str(numero)}/{str(ano)}{extra_1}{extra_2}"
+    if len(limpio) > 16:
+        raise ValueError
+    return limpio
+
+
 def safe_quincena(input_str) -> str:
     """Safe quincena"""
     final = input_str.strip()
@@ -78,6 +105,31 @@ def safe_message(input_str, max_len=250, default_output_str="Sin descripción") 
     if message == "":
         return default_output_str
     return (message[:max_len] + "...") if len(message) > max_len else message
+
+
+def safe_numero_publicacion(input_str):
+    """Safe número publicación"""
+    return safe_sentencia(input_str)
+
+
+def safe_sentencia(input_str):
+    """Safe sentencia"""
+    if not isinstance(input_str, str) or input_str.strip() == "":
+        return ""
+    elementos = re.sub(r"[^0-9A-Z]+", "|", unidecode(input_str)).split("|")
+    try:
+        numero = int(elementos[0])
+        ano = int(elementos[1])
+    except (IndexError, ValueError) as error:
+        raise error
+    if numero <= 0:
+        raise ValueError
+    if ano < 1900 or ano > date.today().year:
+        raise ValueError
+    limpio = f"{str(numero)}/{str(ano)}"
+    if len(limpio) > 16:
+        raise ValueError
+    return limpio
 
 
 def safe_rfc(input_str, is_optional=False, search_fragment=False) -> str:

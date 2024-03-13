@@ -10,6 +10,8 @@ from config.settings import Settings
 from portal_notarias.blueprints.autoridades.views import autoridades
 from portal_notarias.blueprints.bitacoras.views import bitacoras
 from portal_notarias.blueprints.distritos.views import distritos
+from portal_notarias.blueprints.edictos.views import edictos
+from portal_notarias.blueprints.edictos_acuses.views import edictos_acuses
 from portal_notarias.blueprints.entradas_salidas.views import entradas_salidas
 from portal_notarias.blueprints.modulos.views import modulos
 from portal_notarias.blueprints.permisos.views import permisos
@@ -38,6 +40,8 @@ def create_app():
     app.register_blueprint(autoridades)
     app.register_blueprint(bitacoras)
     app.register_blueprint(distritos)
+    app.register_blueprint(edictos)
+    app.register_blueprint(edictos_acuses)
     app.register_blueprint(entradas_salidas)
     app.register_blueprint(modulos)
     app.register_blueprint(permisos)

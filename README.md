@@ -93,11 +93,31 @@ then
     export PYTHONPATH=$(pwd)
     echo "   PYTHONPATH: ${PYTHONPATH}"
     echo
-    echo "-- Arrancar Flask o RQ Worker"
+    echo "-- Poetry"
+    export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+    echo "   $(poetry --version)"
+    echo
+    echo "-- Flask 127.0.0.1:5000"
     alias arrancar="flask run --port=5000"
-    alias fondear="rq worker ${TASK_QUEUE}"
     echo "   arrancar = flask run --port=5000"
-    echo "   fondear = rq worker ${TASK_QUEUE}"
+    echo
+    echo "-- RQ Worker ${TASK_QUEUE}"
+    alias fondear="rq worker ${TASK_QUEUE}"
+    echo "   fondear"
+    echo
+    if [ -f cli/app.py ]
+    then
+        echo "-- Ejecutar el CLI"
+        alias cli="python3 ${PWD}/cli/app.py"
+        echo "   cli --help"
+        echo
+    fi
+fi
+
+if [ -f .github/workflows/gcloud-app-deploy.yml ]
+then
+    echo "-- Si cambia pyproject.toml reconstruya requirements.txt para el deploy en GCP via GitHub Actions"
+    echo "   poetry export -f requirements.txt --output requirements.txt --without-hashes"
     echo
 fi
 ```

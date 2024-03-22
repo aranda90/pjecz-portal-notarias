@@ -33,6 +33,10 @@ TASK_QUEUE=pjecz_portal_notarias
 # Salt sirve para cifrar el ID con HashID, debe ser igual en la API
 SALT=xxxxxxxx
 
+# Sendgrid para enviar mensajes via correo electronico
+SENDGRID_API_KEY=SG.XXXXXXXXXXXXXXXXXXXXXX.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+SENDGRID_FROM_EMAIL=XXXXXXX@XXXXX.XXX.XX
+
 # Si esta en PRODUCTION se evita reiniciar la base de datos
 DEPLOYMENT_ENVIRONMENT=develop
 ```

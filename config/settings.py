@@ -5,6 +5,7 @@ Para produccion, configure los siguientes secretos en Google Cloud Secret Manage
 
 - pjecz_portal_notarias_cloud_storage_deposito
 - pjecz_portal_notarias_cloud_storage_deposito_edictos
+- pjecz_portal_notarias_estado_clave
 - pjecz_portal_notarias_host
 - pjecz_portal_notarias_redis_url
 - pjecz_portal_notarias_salt
@@ -16,6 +17,7 @@ Para desarrollo, debe crear un archivo .env con las variables de entorno:
 
 - CLOUD_STORAGE_DEPOSITO
 - CLOUD_STORAGE_DEPOSITO_EDICTOS
+- ESTADO_CLAVE
 - HOST
 - REDIS_URL
 - SALT

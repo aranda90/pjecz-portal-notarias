@@ -6,14 +6,15 @@
 {% block title %}Portal de Notarías {% endblock %}
 
 {% block topbar_actions %}
-    {{ topbar.page('Portal de Notarías ' + current_user.nombre) }}
+    {{ topbar.page('Bienvenida ' + current_user.nombre) }}
 {% endblock %}
 
 {% block content %}
-    {# Detalle de la ultima quincena #}
-    {% call detail.card(title='Bienvenidos ') %}
+    {# Bienvenida portal notarias #}
+    {% call detail.card(title='Notaría ') %}
         <div class="container">
             <div class="row">
+            {% if current_user.autoridad.es_notaria %}
                 <div class="col-md-6 col-sm-12 mb-2">
                     <img src="https://storage.googleapis.com/pjecz-informatica/static/images/inicio_notaria.png" class="img-fluid mb-2">
                 </div>
@@ -21,8 +22,17 @@
                     <p>
                         Este espacio está diseñado para que las notarías puedan realizar de manera fácil y eficiente la publicación y republicación de sus edictos para poder gestionarlas.                     
                     </p>
-                    <a href="{{ url_for('edictos.list_active') }}" class="btn d-grid gap-2 btn-primary btn-xl btn-tickets ml-auto">Subir Edicto</a>
+                    <a href="{{ url_for('edictos.list_active') }}" class="btn d-grid gap-2 btn-primary btn-xl ml-auto">Subir Edicto</a>
                 </div>
+            {% else %}
+                <div class="col-md-6 col-sm-12 mb-2">
+                    <img src="../../../../static/img/no-entrar.jpg" class="img-fluid mb-2">
+                </div>
+                <div class="col-md-6 col-sm-12 mb-5 mt-5">
+                    <p class="text-danger">No tienes permiosos para esta plataforma, favor de entrar a la plataforma correspondiente</p>
+                    <a href="http://justiciadigital.gob.mx/" class="btn d-grid gap-2 btn-primary btn-xl ml-auto">Justicia Digital</a>
+                </div>
+            {% endif %}
             </div>
         </div>
     {% endcall %}

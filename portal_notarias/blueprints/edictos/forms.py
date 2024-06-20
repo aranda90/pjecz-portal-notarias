@@ -24,7 +24,7 @@ class EdictoNewForm(FlaskForm):
     fecha_acuse_3 = DateField("Publicación 3", validators=[Optional()])
     fecha_acuse_4 = DateField("Publicación 4", validators=[Optional()])
     fecha_acuse_5 = DateField("Publicación 5", validators=[Optional()])
-    descripcion = StringField("Descripción", validators=[DataRequired(), Length(max=256)])
+    descripcion = StringField("Descripción", validators=[DataRequired(), Length(max=64)])
     archivo = FileField("Adjuntar archivo en formato (.PDF)", validators=[Optional()])
     guardar = SubmitField("Guardar")
 

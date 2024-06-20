@@ -454,7 +454,6 @@ def new():
 
         # Insertar los acuses solo si la validación es exitosa
         for fecha_acuse in fechas_acuses_list:
-
             # Verificar que la fecha del acuse no sea la fecha de hoy
             if fecha_acuse != hoy_date:
                 acuse = EdictoAcuse(
@@ -462,9 +461,6 @@ def new():
                     fecha=fecha_acuse,
                 )
                 acuse.save()
-
-        print("hoy_date:", hoy_date)
-        print("fecha_acuse_date:", fecha_acuse)
 
         # Subir a Google Cloud Storage
         es_exitoso = True

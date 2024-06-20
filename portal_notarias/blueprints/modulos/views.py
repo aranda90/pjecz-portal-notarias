@@ -34,10 +34,18 @@ def datatable_json():
     draw, start, rows_per_page = get_datatable_parameters()
     # Consultar
     consulta = Modulo.query
+    # Solo los modulos en Portal Notarias
+    consulta = consulta.filter_by(en_portal_notarias=True)
+    # Primero filtrar por columnas propias
     if "estatus" in request.form:
         consulta = consulta.filter_by(estatus=request.form["estatus"])
     else:
         consulta = consulta.filter_by(estatus="A")
+    if "nombre" in request.form:
+        nombre = safe_string(request.form["nombre"], save_enie=True)
+        if nombre != "":
+            consulta = consulta.filter(Modulo.nombre.contains(nombre))
+    # Ordenar y paginar
     registros = consulta.order_by(Modulo.nombre).offset(start).limit(rows_per_page).all()
     total = consulta.count()
     # Elaborar datos para DataTable
@@ -106,6 +114,9 @@ def new():
             icono=form.icono.data,
             ruta=form.ruta.data,
             en_navegacion=form.en_navegacion.data,
+            en_plataforma_carina=form.en_plataforma_carina.data,
+            en_plataforma_hercules=form.en_plataforma_hercules.data,
+            en_plataforma_web=form.en_plataforma_web.data,
             en_portal_notarias=form.en_portal_notarias.data,
         )
         modulo.save()
@@ -143,6 +154,9 @@ def edit(modulo_id):
             modulo.icono = form.icono.data
             modulo.ruta = form.ruta.data
             modulo.en_navegacion = form.en_navegacion.data
+            modulo.en_plataforma_carina = form.en_plataforma_carina.data
+            modulo.en_plataforma_hercules = form.en_plataforma_hercules.data
+            modulo.en_plataforma_web = form.en_plataforma_web.data
             modulo.en_portal_notarias = form.en_portal_notarias.data
             modulo.save()
             bitacora = Bitacora(
@@ -159,6 +173,9 @@ def edit(modulo_id):
     form.icono.data = modulo.icono
     form.ruta.data = modulo.ruta
     form.en_navegacion.data = modulo.en_navegacion
+    form.en_plataforma_carina.data = modulo.en_plataforma_carina
+    form.en_plataforma_hercules.data = modulo.en_plataforma_hercules
+    form.en_plataforma_web.data = modulo.en_plataforma_web
     form.en_portal_notarias.data = modulo.en_portal_notarias
     return render_template("modulos/edit.jinja2", form=form, modulo=modulo)
 

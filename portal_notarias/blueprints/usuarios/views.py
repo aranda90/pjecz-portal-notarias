@@ -3,7 +3,6 @@ Usuarios, vistas
 """
 
 import json
-import os
 import re
 from datetime import datetime
 
@@ -20,6 +19,7 @@ from lib.safe_next_url import safe_next_url
 from lib.safe_string import CONTRASENA_REGEXP, EMAIL_REGEXP, TOKEN_REGEXP, safe_email, safe_message, safe_string
 from portal_notarias.blueprints.autoridades.models import Autoridad
 from portal_notarias.blueprints.bitacoras.models import Bitacora
+from portal_notarias.blueprints.distritos.models import Distrito
 from portal_notarias.blueprints.entradas_salidas.models import EntradaSalida
 from portal_notarias.blueprints.modulos.models import Modulo
 from portal_notarias.blueprints.permisos.models import Permiso
@@ -140,6 +140,7 @@ def datatable_json():
     draw, start, rows_per_page = get_datatable_parameters()
     # Consultar
     consulta = Usuario.query
+    # Primero filtrar por columnas propias
     if "estatus" in request.form:
         consulta = consulta.filter_by(estatus=request.form["estatus"])
     else:
@@ -158,6 +159,7 @@ def datatable_json():
         consulta = consulta.filter(Usuario.puesto.contains(safe_string(request.form["puesto"])))
     if "email" in request.form:
         consulta = consulta.filter(Usuario.email.contains(safe_email(request.form["email"], search_fragment=True)))
+    # Ordenar y paginar
     registros = consulta.order_by(Usuario.email).offset(start).limit(rows_per_page).all()
     total = consulta.count()
     # Elaborar datos para DataTable
@@ -253,7 +255,13 @@ def new():
         bitacora.save()
         flash(bitacora.descripcion, "success")
         return redirect(bitacora.url)
-    return render_template("usuarios/new.jinja2", form=form)
+    # Consultar el distrito por defecto
+    distrito_por_defecto_id = 1
+    distrito_por_defecto = Distrito.query.filter_by(clave="ND").first()
+    if distrito_por_defecto is not None:
+        distrito_por_defecto_id = distrito_por_defecto.id
+    # Entregar
+    return render_template("usuarios/new.jinja2", form=form, distrito_por_defecto_id=distrito_por_defecto_id)
 
 
 @usuarios.route("/usuarios/edicion/<int:usuario_id>", methods=["GET", "POST"])
@@ -291,7 +299,6 @@ def edit(usuario_id):
             bitacora.save()
             flash(bitacora.descripcion, "success")
             return redirect(bitacora.url)
-    form.autoridad.data = usuario.autoridad_id  # Usa id porque es un SelectField
     form.email.data = usuario.email
     form.nombres.data = usuario.nombres
     form.apellido_paterno.data = usuario.apellido_paterno

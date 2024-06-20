@@ -1,13 +1,14 @@
 """
 Usuarios-Roles, vistas
 """
+
 import json
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from lib.datatables import get_datatable_parameters, output_datatable_json
-from lib.safe_string import safe_message
+from lib.safe_string import safe_email, safe_message, safe_string
 from portal_notarias.blueprints.bitacoras.models import Bitacora
 from portal_notarias.blueprints.modulos.models import Modulo
 from portal_notarias.blueprints.permisos.models import Permiso
@@ -44,6 +45,28 @@ def datatable_json():
         consulta = consulta.filter_by(usuario_id=request.form["usuario_id"])
     if "rol_id" in request.form:
         consulta = consulta.filter_by(rol_id=request.form["rol_id"])
+    # Luego filtrar por columnas de otras tablas
+    email = ""
+    if "email" in request.form:
+        try:
+            email = safe_email(request.form["email"], search_fragment=True)
+        except ValueError:
+            pass
+    nombres = ""
+    if "nombres" in request.form:
+        nombres = safe_string(request.form["nombres"], save_enie=True)
+    apellido_paterno = ""
+    if "apellido_paterno" in request.form:
+        apellido_paterno = safe_string(request.form["apellido_paterno"], save_enie=True)
+    if email != "" or nombres != "" or apellido_paterno != "":
+        consulta = consulta.join(Usuario)
+        if email != "":
+            consulta = consulta.filter(Usuario.email.contains(email))
+        if nombres != "":
+            consulta = consulta.filter(Usuario.nombres.contains(nombres))
+        if apellido_paterno != "":
+            consulta = consulta.filter(Usuario.apellido_paterno.contains(apellido_paterno))
+    # Ordenar y paginar
     registros = consulta.order_by(UsuarioRol.id).offset(start).limit(rows_per_page).all()
     total = consulta.count()
     # Elaborar datos para DataTable
@@ -57,9 +80,9 @@ def datatable_json():
                 },
                 "usuario": {
                     "email": resultado.usuario.email,
-                    "url": url_for("usuarios.detail", usuario_id=resultado.usuario_id)
-                    if current_user.can_view("USUARIOS")
-                    else "",
+                    "url": (
+                        url_for("usuarios.detail", usuario_id=resultado.usuario_id) if current_user.can_view("USUARIOS") else ""
+                    ),
                 },
                 "usuario_nombre": resultado.usuario.nombre,
                 "usuario_puesto": resultado.usuario.puesto,
@@ -114,7 +137,12 @@ def new_with_rol(rol_id):
         descripcion = f"{usuario.email} en {rol.nombre}"
         usuario_rol_existente = UsuarioRol.query.filter(UsuarioRol.usuario == usuario).filter(UsuarioRol.rol == rol).first()
         if usuario_rol_existente is not None:
-            flash(f"CONFLICTO: Ya existe {rol.nombre} en {usuario.email}.", "warning")
+            if usuario_rol_existente.estatus == "B":
+                usuario_rol_existente.estatus = "A"
+                usuario_rol_existente.save()
+                flash(f"Se ha recuperado {rol.nombre} en {usuario.email}.", "success")
+            else:
+                flash(f"Ya existe {rol.nombre} en {usuario.email}. Nada por hacer.", "warning")
             return redirect(url_for("usuarios_roles.detail", usuario_rol_id=usuario_rol_existente.id))
         usuario_rol = UsuarioRol(
             rol=rol,
@@ -151,7 +179,12 @@ def new_with_usuario(usuario_id):
         descripcion = f"{usuario.email} en {rol.nombre}"
         usuario_rol_existente = UsuarioRol.query.filter(UsuarioRol.usuario == usuario).filter(UsuarioRol.rol == rol).first()
         if usuario_rol_existente is not None:
-            flash(f"CONFLICTO: Ya existe {rol.nombre} en {usuario.email}.", "warning")
+            if usuario_rol_existente.estatus == "B":
+                usuario_rol_existente.estatus = "A"
+                usuario_rol_existente.save()
+                flash(f"Se ha recuperado {rol.nombre} en {usuario.email}.", "success")
+            else:
+                flash(f"Ya existe {rol.nombre} en {usuario.email}. Nada por hacer.", "warning")
             return redirect(url_for("usuarios_roles.detail", usuario_rol_id=usuario_rol_existente.id))
         usuario_rol = UsuarioRol(
             rol=rol,

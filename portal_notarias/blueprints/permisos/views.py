@@ -1,13 +1,14 @@
 """
 Permisos, vistas
 """
+
 import json
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from lib.datatables import get_datatable_parameters, output_datatable_json
-from lib.safe_string import safe_message
+from lib.safe_string import safe_message, safe_string
 from portal_notarias.blueprints.bitacoras.models import Bitacora
 from portal_notarias.blueprints.modulos.models import Modulo
 from portal_notarias.blueprints.permisos.forms import PermisoEditForm, PermisoNewWithModuloForm, PermisoNewWithRolForm
@@ -34,14 +35,35 @@ def datatable_json():
     draw, start, rows_per_page = get_datatable_parameters()
     # Consultar
     consulta = Permiso.query
+    # Solo los modulos en Portal Notarias
+    consulta = consulta.join(Modulo).filter(Modulo.en_portal_notarias == True)
+    # Primero filtrar por columnas propias
     if "estatus" in request.form:
-        consulta = consulta.filter_by(estatus=request.form["estatus"])
+        consulta = consulta.filter(Permiso.estatus == request.form["estatus"])
     else:
-        consulta = consulta.filter_by(estatus="A")
+        consulta = consulta.filter(Permiso.estatus == "A")
     if "modulo_id" in request.form:
-        consulta = consulta.filter_by(modulo_id=request.form["modulo_id"])
+        consulta = consulta.filter(Permiso.modulo_id == request.form["modulo_id"])
     if "rol_id" in request.form:
-        consulta = consulta.filter_by(rol_id=request.form["rol_id"])
+        consulta = consulta.filter(Permiso.rol_id == request.form["rol_id"])
+    if "nombre" in request.form:
+        nombre = safe_string(request.form["nombre"], save_enie=True)
+        if nombre != "":
+            consulta = consulta.filter(Permiso.nombre.contains(nombre))
+    if "nivel" in request.form:
+        nivel = safe_string(request.form["nivel"], save_enie=True)
+        if nivel != "":
+            consulta = consulta.filter(Permiso.nivel == nivel)
+    # Luego filtrar por columnas de otras tablas
+    if "rol_nombre" in request.form:
+        rol_nombre = safe_string(request.form["rol_nombre"], save_enie=True)
+        if rol_nombre != "":
+            consulta = consulta.join(Rol).filter(Rol.nombre.contains(rol_nombre))
+    if "modulo_nombre" in request.form:
+        modulo_nombre = safe_string(request.form["modulo_nombre"], save_enie=True)
+        if modulo_nombre != "":
+            consulta = consulta.filter(Modulo.nombre.contains(modulo_nombre))  # Antes se hizo el join(Modulo)
+    # Ordenar y paginar
     registros = consulta.order_by(Permiso.nombre).offset(start).limit(rows_per_page).all()
     total = consulta.count()
     # Elaborar datos para DataTable
@@ -110,7 +132,13 @@ def new_with_rol(rol_id):
         nombre = f"{rol.nombre} puede {Permiso.NIVELES[nivel]} en {modulo.nombre}"
         permiso_existente = Permiso.query.filter(Permiso.modulo == modulo).filter(Permiso.rol == rol).first()
         if permiso_existente is not None:
-            flash(f"CONFLICTO: Ya existe {rol.nombre} en {modulo.nombre}.", "warning")
+            if permiso_existente.estatus == "B":
+                permiso_existente.nivel = nivel
+                permiso_existente.estatus = "A"
+                permiso_existente.save()
+                flash(f"Se ha recuperado {nombre}.", "success")
+            else:
+                flash(f"Ya existe {nombre}. Nada por hacer.", "warning")
             return redirect(url_for("permisos.detail", permiso_id=permiso_existente.id))
         permiso = Permiso(
             modulo=modulo,
@@ -142,7 +170,13 @@ def new_with_modulo(modulo_id):
         nombre = f"{rol.nombre} puede {Permiso.NIVELES[nivel]} en {modulo.nombre}"
         permiso_existente = Permiso.query.filter(Permiso.modulo == modulo).filter(Permiso.rol == rol).first()
         if permiso_existente is not None:
-            flash(f"CONFLICTO: Ya existe {nombre}.", "warning")
+            if permiso_existente.estatus == "B":
+                permiso_existente.nivel = nivel
+                permiso_existente.estatus = "A"
+                permiso_existente.save()
+                flash(f"Se ha recuperado {nombre}.", "success")
+            else:
+                flash(f"Ya existe {nombre}. Nada por hacer.", "warning")
             return redirect(url_for("permisos.detail", permiso_id=permiso_existente.id))
         permiso = Permiso(
             modulo=modulo,

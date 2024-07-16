@@ -1,6 +1,7 @@
 """
 Tareas, vistas
 """
+
 import json
 
 from flask import Blueprint, current_app, flash, make_response, redirect, render_template, request, url_for
@@ -59,9 +60,9 @@ def datatable_json():
                 "mensaje": resultado.mensaje,
                 "usuario": {
                     "email": resultado.usuario.email,
-                    "url": url_for("usuarios.detail", usuario_id=resultado.usuario_id)
-                    if current_user.can_view("USUARIOS")
-                    else "",
+                    "url": (
+                        url_for("usuarios.detail", usuario_id=resultado.usuario_id) if current_user.can_view("USUARIOS") else ""
+                    ),
                 },
                 "creado": resultado.creado.strftime("%Y-%m-%d %H:%M:%S"),
             }

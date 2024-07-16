@@ -2,11 +2,12 @@
 Edictos, modelos
 """
 
-from sqlalchemy import Column, Date, Integer, String
-from sqlalchemy.orm import relationship
+from datetime import date
+
+from sqlalchemy import Date, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from lib.universal_mixin import UniversalMixin
-
 from portal_notarias.extensions import database
 
 
@@ -17,23 +18,23 @@ class Edicto(database.Model, UniversalMixin):
     __tablename__ = "edictos"
 
     # Clave primaria
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     # Clave foránea
-    autoridad_id = database.Column(database.Integer, database.ForeignKey("autoridades.id"), index=True, nullable=False)
-    autoridad = database.relationship("Autoridad", back_populates="edictos")
+    autoridad_id: Mapped[int] = mapped_column(ForeignKey("autoridades.id"))
+    autoridad: Mapped["Autoridad"] = relationship(back_populates="edictos")
 
     # Columnas
-    fecha = Column(Date)
-    descripcion = Column(String(256), nullable=False)
-    expediente = Column(String(16), nullable=False, default="", server_default="")
-    numero_publicacion = Column(String(16), nullable=False, default="", server_default="")
-    archivo = Column(String(256), nullable=False, default="", server_default="")
-    url = Column(String(512), nullable=False, default="", server_default="")
+    fecha: Mapped[date] = mapped_column(Date(), index=True)
+    descripcion: Mapped[str] = mapped_column(String(256))
+    expediente: Mapped[str] = mapped_column(String(16))
+    numero_publicacion: Mapped[str] = mapped_column(String(16))
+    archivo: Mapped[str] = mapped_column(String(256), default="", server_default="")
+    url: Mapped[str] = mapped_column(String(512), default="", server_default="")
 
     # Columnas nuevas
-    acuse_num = Column(Integer, nullable=False, default=0)
-    edicto_id_original = Column(Integer, nullable=False, default=0)
+    acuse_num: Mapped[int] = mapped_column(default=0)
+    edicto_id_original: Mapped[int] = mapped_column(default=0)
 
     # Hijos
     edictos_acuses = relationship("EdictoAcuse", back_populates="edicto")

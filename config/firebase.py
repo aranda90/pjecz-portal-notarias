@@ -12,6 +12,7 @@ Configure los siguientes secretos en google cloud secret manager:
 - firebase_projectid
 - firebase_storagebucket
 """
+
 import os
 from functools import lru_cache
 

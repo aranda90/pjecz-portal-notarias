@@ -2,11 +2,12 @@
 EdictosAcuses, modelos
 """
 
-from sqlalchemy import Date, Column, ForeignKey, Integer
-from sqlalchemy.orm import relationship
+from datetime import date
+
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from lib.universal_mixin import UniversalMixin
-
 from portal_notarias.extensions import database
 
 
@@ -17,14 +18,14 @@ class EdictoAcuse(database.Model, UniversalMixin):
     __tablename__ = "edictos_acuses"
 
     # Clave primaria
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     # Clave foránea
-    edicto_id = Column(Integer, ForeignKey("edictos.id"), index=True, nullable=False)
-    edicto = relationship("Edicto", back_populates="edictos_acuses")
+    edicto_id: Mapped[int] = mapped_column(ForeignKey("edictos.id"))
+    edicto: Mapped["Edicto"] = relationship(back_populates="edictos_acuses")
 
     # Columnas
-    fecha = Column(Date, index=True, nullable=False)
+    fecha: Mapped[date] = mapped_column(index=True)
 
     def __repr__(self):
         """Representación"""

@@ -2,11 +2,12 @@
 Municipios, modelos
 """
 
-from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from typing import List
+
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from lib.universal_mixin import UniversalMixin
-
 from portal_notarias.extensions import database
 
 
@@ -17,18 +18,18 @@ class Municipio(database.Model, UniversalMixin):
     __tablename__ = "municipios"
 
     # Clave primaria
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     # Clave foránea
-    estado_id = Column(Integer, ForeignKey("estados.id"), index=True, nullable=False)
-    estado = relationship("Estado", back_populates="municipios")
+    estado_id: Mapped[int] = mapped_column(ForeignKey("estados.id"))
+    estado: Mapped["Estado"] = relationship(back_populates="municipios")
 
     # Columnas
-    clave = Column(String(3), nullable=False)
-    nombre = Column(String(256), nullable=False)
+    clave: Mapped[str] = mapped_column(String(3))
+    nombre: Mapped[str] = mapped_column(String(256))
 
     # Hijos
-    autoridades = relationship("Autoridad", back_populates="municipio")
+    autoridades: Mapped[List["Autoridad"]] = relationship("Autoridad", back_populates="municipio")
 
     def __repr__(self):
         """Representación"""

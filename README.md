@@ -1,6 +1,6 @@
 # pjecz-portal-notarias
 
-Es un sistema web hecho en Flask para la entrega de Edictos y revision de Escrituras.
+Es un sistema web hecho en Flask para la entrega de Edictos.
 
 ## Configurar
 

@@ -12,7 +12,7 @@
                 {% if estatus == 'B' %}{{ topbar.button_list_active('Activos', url_for('edictos.list_active')) }}{% endif %}
             {% endif %} #}
             {% if current_user.can_edit('EDICTOS') %}
-                {{ topbar.button_upload('Subir', url_for('edictos.new')) }}
+                {{ topbar.button_upload('Publicar', url_for('edictos.new')) }}
             {% endif %}
         {% endif %}
     {% endcall %}

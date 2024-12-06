@@ -6,7 +6,7 @@
 {% block title %}Portal de Notarías {% endblock %}
 
 {% block topbar_actions %}
-    {{ topbar.page('Bienvenida ' + current_user.nombre) }}
+    {{ topbar.page('Bienvenidos(as) ' + current_user.nombre) }}
 {% endblock %}
 
 {% block content %}
@@ -18,7 +18,7 @@
                 <div class="col-md-6 col-sm-12 mb-2">
                     <img src="https://storage.googleapis.com/pjecz-informatica/static/images/inicio_notaria.png" class="img-fluid mb-2">
                 </div>
-                <div class="col-md-6 col-sm-12 mb-2 mt-5">
+                <div class="col-md-6 col-sm-12 mb-5 mt-5">
                     <p>
                         Este espacio está diseñado para que las notarías puedan realizar de manera fácil y eficiente la publicación y republicación de sus edictos para poder gestionarlas.                     
                     </p>
@@ -28,8 +28,8 @@
                 <div class="col-md-6 col-sm-12 mb-2">
                     <img src="../../../../static/img/no-entrar.jpg" class="img-fluid mb-2">
                 </div>
-                <div class="col-md-6 col-sm-12 mb-5 mt-5">
-                    <p class="text-danger">No tienes permiosos para esta plataforma, favor de entrar a la plataforma correspondiente</p>
+                <div class="col-md-6 col-sm-12" style="padding-top: 210px; margin-right: auto; margin-left: auto">
+                    <p class="text-danger fs-3">No tienes permiosos para esta plataforma, favor de entrar a la plataforma correspondiente</p>
                     <a href="http://justiciadigital.gob.mx/" class="btn d-grid gap-2 btn-primary btn-xl ml-auto">Justicia Digital</a>
                 </div>
             {% endif %}

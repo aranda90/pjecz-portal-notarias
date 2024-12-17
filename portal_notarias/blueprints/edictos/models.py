@@ -27,8 +27,8 @@ class Edicto(database.Model, UniversalMixin):
     # Columnas
     fecha: Mapped[date] = mapped_column(Date(), index=True)
     descripcion: Mapped[str] = mapped_column(String(256))
-    expediente: Mapped[str] = mapped_column(String(16))
-    numero_publicacion: Mapped[str] = mapped_column(String(16))
+    expediente: Mapped[str] = mapped_column(String(16), default="")
+    numero_publicacion: Mapped[str] = mapped_column(String(16), default="")
     archivo: Mapped[str] = mapped_column(String(256), default="", server_default="")
     url: Mapped[str] = mapped_column(String(512), default="", server_default="")
 
